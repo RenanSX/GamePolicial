@@ -6,7 +6,7 @@ public class Hero : MonoBehaviour
 {
 
     public float speed = 5f;
-    public float jumpForce = 600;
+    public float jumpForce = 400;
 
     public GameObject legs;
     public GameObject torso;
@@ -21,7 +21,12 @@ public class Hero : MonoBehaviour
     private Transform groundCheck;
     private float hForce = 0;
 
-    
+    //Tiro
+    private float fireRate = 0.5f;
+    private float nextFire;
+    public GameObject bulletPreab;
+    public Transform shootSpawner;
+
 
     private bool isDead = false;
 
@@ -41,8 +46,17 @@ public class Hero : MonoBehaviour
     {
         if (!isDead)
         {
+            //define o player no chao
             onGround = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
+            //Se o player estiver no chao quer dizer que pode pular
+            if (onGround)
+            {
+                animTorso.SetBool("Jump", false);
+                animLegs.SetBool("Jump", false);
+            }
+
+            //Configuração do pulo
             if (Input.GetButtonDown("Jump") && onGround)
             {
                 jump = true;
@@ -55,6 +69,14 @@ public class Hero : MonoBehaviour
                 }
             }
 
+            //Se o botão de tiro estiver pressionado, muda a animação tiro
+            if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
+            {
+                nextFire = Time.time + fireRate;
+                animTorso.SetTrigger("Shoot");
+                //GameObject tempBullet = Instantiate(bulletPreab, shootSpawner.position, shootSpawner.rotation);
+
+            }
         }
     }
 
@@ -78,8 +100,11 @@ public class Hero : MonoBehaviour
                 Flip();
             }
 
+            //Se jump for verdadeiro seta no animator, coloca false para nao pular de novo e muda a velocidade
             if (jump)
             {
+                animTorso.SetBool("Jump", true);
+                animLegs.SetBool("Jump", true);
                 jump = false;
                 rb2d.AddForce(Vector2.up * jumpForce);
             }
