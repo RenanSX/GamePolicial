@@ -74,7 +74,12 @@ public class Hero : MonoBehaviour
             {
                 nextFire = Time.time + fireRate;
                 animTorso.SetTrigger("Shoot");
-                //GameObject tempBullet = Instantiate(bulletPreab, shootSpawner.position, shootSpawner.rotation);
+                GameObject tempBullet = Instantiate(bulletPreab, shootSpawner.position, shootSpawner.rotation);
+
+                if (!facingRight)
+                {
+                    tempBullet.transform.eulerAngles = new Vector3(0, 0, 180);
+                }
 
             }
         }
